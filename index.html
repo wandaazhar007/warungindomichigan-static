@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Warung Indo Michigan — Toko Bahan Makanan Indonesia di Michigan. Bumbu, mie instan, sambal, kopi, snack, dan produk kesehatan khas Indonesia." />
+  <meta name="keywords" content="Indonesian grocery Michigan, toko indonesia michigan, bumbu masak indonesia, mie instan, warung indonesia" />
+  <meta property="og:title" content="Warung Indo Michigan 🇮🇩" />
+  <meta property="og:description" content="Your Favorite Indonesian Groceries in Michigan" />
+  <meta property="og:type" content="website" />
+
+  <title>Warung Indo Michigan 🇮🇩 — Indonesian Grocery Store</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════ -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <a class="nav-logo" href="#" aria-label="Warung Indo Michigan — Home">
+    <!-- Logo Badge -->
+    <div class="logo-badge" aria-hidden="true">WIM</div>
+    <div class="logo-text">
+      <span class="brand">Warung Indo Michigan</span>
+      <span class="sub">Indonesian Grocery 🇮🇩</span>
+    </div>
+  </a>
+
+  <button class="nav-wa-btn" onclick="openWAOrder()" aria-label="Order via WhatsApp">
+    <!-- WhatsApp icon -->
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.55 4.116 1.516 5.849L.057 23.454a.5.5 0 0 0 .617.619l5.7-1.496A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.806 9.806 0 0 1-4.99-1.365l-.357-.213-3.706.973.988-3.618-.233-.372A9.784 9.784 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/>
+    </svg>
+    Order via WhatsApp
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section id="hero" aria-label="Hero">
+  <div class="hero-bg-pattern" aria-hidden="true"></div>
+  <div class="hero-grid-lines"  aria-hidden="true"></div>
+
+  <div class="hero-content">
+    <!-- Left: text -->
+    <div class="hero-text">
+      <div class="hero-badge">
+        🇮🇩 &nbsp;Indonesian Grocery in Michigan
+      </div>
+
+      <h1 class="hero-title">
+        Your Favorite<br>
+        <span>Indonesian</span><br>
+        Groceries in Michigan
+      </h1>
+
+      <p class="hero-desc">
+        Find authentic Indonesian foods, seasonings, snacks, beverages, health products, and household essentials — delivered to the Indonesian community in Michigan.
+      </p>
+
+      <div class="hero-cta-group">
+        <button class="btn-primary" id="hero-cta">
+          See Our Products
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+        <button class="btn-outline" onclick="openWAOrder()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.55 4.116 1.516 5.849L.057 23.454a.5.5 0 0 0 .617.619l5.7-1.496A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.806 9.806 0 0 1-4.99-1.365l-.357-.213-3.706.973.988-3.618-.233-.372A9.784 9.784 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/>
+          </svg>
+          Chat WA
+        </button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">218+</span>
+          <span class="stat-label">WA Members</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">250+</span>
+          <span class="stat-label">Products</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">12</span>
+          <span class="stat-label">Categories</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: visual -->
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-img-wrap">
+        <!-- Using an illustration placeholder — replace src with real photo -->
+        <img
+          src="https://images.unsplash.com/photo-1609501676725-7186f017a4b7?w=600&q=80&fit=crop"
+          alt="Indonesian grocery products"
+          loading="eager"
+          onerror="this.parentElement.innerHTML='<div style=\'width:100%;aspect-ratio:4/5;background:rgba(255,203,5,0.1);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:5rem\'>🇮🇩</div>'"
+        />
+
+        <!-- Floating cards -->
+        <div class="hero-floating-card card-1">
+          <div class="card-icon">📦</div>
+          <div class="card-text">
+            <strong>250+ Products</strong>
+            <span>always in stock</span>
+          </div>
+        </div>
+        <div class="hero-floating-card card-2">
+          <div class="card-icon">✅</div>
+          <div class="card-text">
+            <strong>Original Import</strong>
+            <span>from Indonesia</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WHY US
+══════════════════════════════════════════ -->
+<section id="why-us" aria-label="Why choose us">
+  <div class="section-inner">
+    <div class="fade-up" style="text-align:center; margin-bottom:0;">
+      <span class="section-label">Mengapa Kami?</span>
+      <h2 class="section-title" style="text-align:center;">Belanja Produk Indonesia<br>Tanpa Ribet</h2>
+      <p class="section-desc" style="text-align:center; margin:0 auto;">
+        Kami hadir untuk masyarakat Indonesia di Michigan — menyediakan produk original dengan harga terjangkau dan proses pemesanan yang mudah.
+      </p>
+    </div>
+
+    <div class="features-grid" style="margin-top:3rem;">
+      <div class="feature-card fade-up" style="transition-delay:0.05s">
+        <div class="feature-icon">🏷️</div>
+        <h3>Harga Terjangkau</h3>
+        <p>Produk Indonesia dengan harga yang bersahabat, tanpa perlu jauh-jauh ke kota besar.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.1s">
+        <div class="feature-icon">🇮🇩</div>
+        <h3>Produk Original</h3>
+        <p>Semua produk kami adalah produk asli Indonesia, langsung diimport untuk Anda.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.15s">
+        <div class="feature-icon">📲</div>
+        <h3>Order via WhatsApp</h3>
+        <p>Pesan dengan mudah melalui WhatsApp — cukup chat dan produk siap disiapkan.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.2s">
+        <div class="feature-icon">🔄</div>
+        <h3>Stok Selalu Update</h3>
+        <p>Kami rutin update stok dan memberitahu anggota komunitas lewat grup WA.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.25s">
+        <div class="feature-icon">👥</div>
+        <h3>Komunitas Aktif</h3>
+        <p>Bergabung dengan 218+ anggota WA — komunitas diaspora Indonesia di Michigan.</p>
+      </div>
+      <div class="feature-card fade-up" style="transition-delay:0.3s">
+        <div class="feature-icon">📦</div>
+        <h3>250+ Produk</h3>
+        <p>Dari bumbu, mie, kopi, sambal, snack, hingga obat-obatan — semua ada di sini.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PRODUCTS
+══════════════════════════════════════════ -->
+<section id="products" aria-label="Product catalog">
+  <div class="section-inner">
+
+    <!-- Title (not sticky) -->
+    <div class="products-title fade-up">
+      <span class="section-label">Katalog Produk</span>
+      <h2 class="section-title">Produk Kami</h2>
+    </div>
+
+    <!-- STICKY TOOLBAR: search + category pills + results info -->
+    <div class="products-toolbar" id="products-toolbar">
+      <!-- Search -->
+      <div class="search-wrap" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Cari produk... (misal: indomie, sambal, kopi)"
+          aria-label="Cari produk"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
+      <!-- Category pills -->
+      <div class="category-scroll">
+        <div class="category-pills" id="category-pills" role="list" aria-label="Filter kategori">
+          <!-- Built by JS -->
+          <div class="skeleton skeleton-line" style="width:80px;height:36px;border-radius:99px;flex-shrink:0"></div>
+          <div class="skeleton skeleton-line" style="width:120px;height:36px;border-radius:99px;flex-shrink:0"></div>
+          <div class="skeleton skeleton-line" style="width:100px;height:36px;border-radius:99px;flex-shrink:0"></div>
+          <div class="skeleton skeleton-line" style="width:90px;height:36px;border-radius:99px;flex-shrink:0"></div>
+          <div class="skeleton skeleton-line" style="width:110px;height:36px;border-radius:99px;flex-shrink:0"></div>
+        </div>
+      </div>
+
+      <!-- Results info -->
+      <p id="results-info" aria-live="polite"></p>
+    </div>
+
+    <!-- Product grid (scrolls underneath) -->
+    <div id="product-grid" role="list" aria-label="Daftar produk">
+      <!-- Populated by JS -->
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CONTACT / CTA
+══════════════════════════════════════════ -->
+<section id="contact" aria-label="Contact and community">
+  <div class="section-inner">
+    <div class="contact-inner">
+
+      <!-- Left: contact info -->
+      <div class="contact-text fade-up">
+        <span class="section-label">Hubungi Kami</span>
+        <h2 class="section-title">Siap Membantu<br>Kebutuhan Anda</h2>
+        <p class="section-desc">
+          Punya pertanyaan soal stok, harga, atau pengiriman? Hubungi kami langsung lewat WhatsApp atau follow Facebook kami untuk update terbaru.
+        </p>
+
+        <div class="contact-cards" style="margin-top:2rem;">
+          <!-- WhatsApp -->
+          <a class="contact-card" href="https://wa.me/12693800208" target="_blank" rel="noopener" aria-label="Chat via WhatsApp">
+            <div class="cc-icon cc-wa">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.55 4.116 1.516 5.849L.057 23.454a.5.5 0 0 0 .617.619l5.7-1.496A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.806 9.806 0 0 1-4.99-1.365l-.357-.213-3.706.973.988-3.618-.233-.372A9.784 9.784 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/>
+              </svg>
+            </div>
+            <div class="cc-body">
+              <strong>WhatsApp</strong>
+              <span>Order & pertanyaan produk</span>
+            </div>
+            <span class="cc-arrow" aria-hidden="true">›</span>
+          </a>
+
+          <!-- Facebook -->
+          <a class="contact-card" href="https://www.facebook.com/levi.chen.11503/reels/" target="_blank" rel="noopener" aria-label="Kunjungi Facebook kami">
+            <div class="cc-icon cc-fb">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#4267B2" aria-hidden="true">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </div>
+            <div class="cc-body">
+              <strong>Facebook</strong>
+              <span>Update produk & promo</span>
+            </div>
+            <span class="cc-arrow" aria-hidden="true">›</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: join group CTA -->
+      <div class="contact-cta fade-up" style="transition-delay:0.15s">
+        <div class="cta-flag" aria-hidden="true">🇮🇩</div>
+        <h3>Bergabung dengan<br>Komunitas Kami</h3>
+        <p>
+          Dapatkan update stok terbaru, promo eksklusif, dan info pengiriman langsung di WhatsApp Group Warung Indo Michigan.
+        </p>
+
+        <button class="btn-wa-join" onclick="joinWAGroup()">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.55 4.116 1.516 5.849L.057 23.454a.5.5 0 0 0 .617.619l5.7-1.496A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.806 9.806 0 0 1-4.99-1.365l-.357-.213-3.706.973.988-3.618-.233-.372A9.784 9.784 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/>
+          </svg>
+          Join WhatsApp Group
+        </button>
+
+        <div class="member-count">
+          <div class="member-dots" aria-hidden="true">
+            <div class="member-dot">W</div>
+            <div class="member-dot" style="background:#00274C;color:#FFCB05;">I</div>
+            <div class="member-dot">M</div>
+          </div>
+          218+ members active
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+<footer role="contentinfo">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo-badge" aria-hidden="true">WIM</div>
+      <div class="footer-brand-text">
+        <div class="name">Warung Indo Michigan</div>
+        <div class="tagline">Authentic Indonesian Grocery Store in Michigan</div>
+      </div>
+    </div>
+
+    <div class="footer-copy">
+      <div>
+        Build with love by
+        <a href="https://instagram.com/wanda_azharr/" target="_blank" rel="noopener">Wanda Azhar</a>
+        in Michigan, USA.
+      </div>
+      <div>Copyright &copy; 2026 Warung Indo Michigan</div>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll to top -->
+<button id="scroll-top" aria-label="Kembali ke atas" title="Kembali ke atas">
+  ↑
+</button>
+
+<!-- Main Script -->
+<script src="javascript.js"></script>
+</body>
+</html>
