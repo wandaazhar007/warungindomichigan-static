@@ -6,7 +6,7 @@
 'use strict';
 
 // ─── CONFIG ───────────────────────────────────
-const WA_NUMBER = '12693800208';   // ganti dengan nomor WA asli (tanpa +)
+const WA_NUMBER = '16264614963';   // ganti dengan nomor WA asli (tanpa +)
 const WA_GROUP  = 'https://chat.whatsapp.com/REPLACE_WITH_REAL_LINK'; // ganti dengan link grup
 const FB_LINK   = 'https://www.facebook.com/levi.chen.11503/reels/';
 
