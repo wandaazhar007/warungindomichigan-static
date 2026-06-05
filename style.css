@@ -109,7 +109,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .logo-text .brand { font-size: 14px; font-weight: 600; color: var(--white); }
-.logo-text .sub   { font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.6); letter-spacing: 0.5px; text-transform: uppercase; }
+.logo-text .sub   { font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.6); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 5px; }
 
 .nav-wa-btn {
   display: flex;
