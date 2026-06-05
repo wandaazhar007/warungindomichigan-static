@@ -6,7 +6,7 @@
 'use strict';
 
 // ─── CONFIG ───────────────────────────────────
-const WA_NUMBER = '16264614963';   // ganti dengan nomor WA asli (tanpa +)
+const WA_NUMBER = '12693800208';   // ganti dengan nomor WA asli (tanpa +)
 const WA_GROUP  = 'https://chat.whatsapp.com/REPLACE_WITH_REAL_LINK'; // ganti dengan link grup
 const FB_LINK   = 'https://www.facebook.com/levi.chen.11503/reels/';
 
@@ -584,17 +584,14 @@ function renderProducts() {
     return;
   }
 
-  const waIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.55 4.116 1.516 5.849L.057 23.454a.5.5 0 0 0 .617.619l5.7-1.496A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.806 9.806 0 0 1-4.99-1.365l-.357-.213-3.706.973.988-3.618-.233-.372A9.784 9.784 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>`;
 
   productGrid.innerHTML = matched.map(item => {
-    const msg = encodeURIComponent(`Halo Warung Indo Michigan! 🙏\nSaya ingin memesan:\n\n*${item.name}*\nHarga: ${item.price}\n\nMohon info ketersediaannya. Terima kasih!`);
-    return `<div class="product-card">
+    const qty = getCartQty(item.name);
+    return `<div class="product-card" data-product-name="${item.name.replace(/"/g,'&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}">
       <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
       <div class="product-name">${highlight(item.name, searchQuery)}</div>
       <div class="product-price">${item.price}</div>
-      <a href="https://wa.me/${WA_NUMBER}?text=${msg}" target="_blank" rel="noopener" class="product-order-btn">
-        ${waIcon} Order via WA
-      </a>
+      <div class="card-btn-wrap">${buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty)}</div>
     </div>`;
   }).join('');
 
@@ -632,10 +629,286 @@ window.openFacebook = function() {
   window.open(FB_LINK, '_blank', 'noopener');
 };
 
+// ═══════════════════════════════════════════════
+// CART SYSTEM
+// ═══════════════════════════════════════════════
+const CART_KEY = 'wim_cart_v1';
+
+// Load cart from localStorage (persists across refresh)
+let cart = [];
+try {
+  const saved = localStorage.getItem(CART_KEY);
+  if (saved) cart = JSON.parse(saved);
+} catch(e) { cart = []; }
+
+function saveCart() {
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch(e) {}
+}
+
+function getCartItem(name) {
+  return cart.find(i => i.name === name) || null;
+}
+
+function getCartQty(name) {
+  const item = getCartItem(name);
+  return item ? item.qty : 0;
+}
+
+function addToCart(name, price, catName, catIcon) {
+  const existing = getCartItem(name);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ name, price, catName, catIcon, qty: 1 });
+  }
+  saveCart();
+  updateCartUI();
+  bumpBadge();
+  renderCardButton(name);
+}
+
+function decreaseFromCart(name) {
+  const existing = getCartItem(name);
+  if (!existing) return;
+  existing.qty--;
+  if (existing.qty <= 0) cart = cart.filter(i => i.name !== name);
+  saveCart();
+  updateCartUI();
+  renderCardButton(name);
+}
+
+function removeFromCart(name) {
+  cart = cart.filter(i => i.name !== name);
+  saveCart();
+  updateCartUI();
+  renderCardButton(name);
+}
+
+// ─── TOTAL ────────────────────────────────────
+function getCartTotal() {
+  return cart.reduce((sum, item) => {
+    const num = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+    return sum + num * item.qty;
+  }, 0);
+}
+
+function getCartCount() {
+  return cart.reduce((sum, item) => sum + item.qty, 0);
+}
+
+// ─── BADGE ────────────────────────────────────
+function bumpBadge() {
+  const badge = document.getElementById('nav-cart-badge');
+  if (!badge) return;
+  badge.classList.remove('bump');
+  // Force reflow
+  void badge.offsetWidth;
+  badge.classList.add('bump');
+  setTimeout(() => badge.classList.remove('bump'), 280);
+}
+
+// ─── UPDATE ALL UI ────────────────────────────
+function updateCartUI() {
+  const count = getCartCount();
+  const total = getCartTotal();
+
+  // Badge
+  const badge = document.getElementById('nav-cart-badge');
+  if (badge) badge.textContent = count;
+
+  // Header count
+  const headerCount = document.getElementById('cart-header-count');
+  if (headerCount) headerCount.textContent = `${count} item`;
+
+  // Total
+  const totalEl = document.getElementById('cart-total-value');
+  if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
+
+  // Checkout btn disabled state
+  const checkoutBtn = document.getElementById('cart-checkout-btn');
+  if (checkoutBtn) checkoutBtn.disabled = cart.length === 0;
+
+  // Render cart items list
+  renderCartItems();
+}
+
+// ─── RENDER CART ITEMS ────────────────────────
+function renderCartItems() {
+  const body = document.getElementById('cart-body');
+  if (!body) return;
+
+  if (cart.length === 0) {
+    body.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛒</div>
+        <h3>Keranjang masih kosong</h3>
+        <p>Yuk tambahkan produk Indonesia favoritmu!</p>
+        <button class="cart-empty-btn" onclick="goToProducts()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Cari Produk
+        </button>
+      </div>`;
+    return;
+  }
+
+  body.innerHTML = cart.map(item => {
+    const subtotal = (parseFloat(item.price.replace(/[^0-9.]/g,'')) * item.qty).toFixed(2);
+    return `
+      <div class="cart-item">
+        <div class="cart-item-icon">${item.catIcon}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-cat">${item.catName}</div>
+          <div class="cart-item-price">${item.price} × ${item.qty} = <span class="cart-item-subtotal">$${subtotal}</span></div>
+        </div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="cartDecrease('${escQ(item.name)}')" aria-label="Kurangi">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="cartIncrease('${escQ(item.name)}')" aria-label="Tambah">+</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function escQ(s) { return s.replace(/'/g, "\\'"); }
+
+// expose for inline onclick in cart
+window.cartIncrease = function(name) {
+  const item = getCartItem(name);
+  if (item) { item.qty++; saveCart(); updateCartUI(); renderCardButton(name); bumpBadge(); }
+};
+
+window.cartDecrease = function(name) {
+  decreaseFromCart(name);
+};
+
+// ─── RE-RENDER ONE CARD BUTTON ────────────────
+// After qty change, find all cards matching name and swap button
+function renderCardButton(name) {
+  const qty = getCartQty(name);
+  document.querySelectorAll('.product-card').forEach(card => {
+    if (card.dataset.productName !== name) return;
+    const btnWrap = card.querySelector('.card-btn-wrap');
+    if (!btnWrap) return;
+    btnWrap.innerHTML = buildCardBtn(name, card.dataset.price, card.dataset.catName, card.dataset.catIcon, qty);
+  });
+}
+
+function buildCardBtn(name, price, catName, catIcon, qty) {
+  const cartIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
+  const safeN = escQ(name), safeP = escQ(price), safeCat = escQ(catName), safeIcon = escQ(catIcon);
+
+  if (qty === 0) {
+    return `<button class="btn-add-cart" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}')">
+              ${cartIcon} Tambah ke Keranjang
+            </button>`;
+  }
+  return `<div class="qty-control">
+            <button class="qty-btn" onclick="decreaseFromCart('${safeN}')" aria-label="Kurangi">−</button>
+            <span class="qty-num">${qty}</span>
+            <button class="qty-btn" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}')" aria-label="Tambah">+</button>
+          </div>`;
+}
+
+// ─── DRAWER OPEN / CLOSE ──────────────────────
+window.openCart = function() {
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  updateCartUI();
+};
+
+window.closeCart = function() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+// ─── CLEAR CART — custom modal ────────────────
+window.clearCart = function() {
+  if (cart.length === 0) return;
+  openConfirmModal();
+};
+
+window.openConfirmModal = function() {
+  const overlay = document.getElementById('confirm-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  // force reflow so transition fires
+  void overlay.offsetWidth;
+  overlay.classList.add('active');
+};
+
+window.closeConfirmModal = function() {
+  const overlay = document.getElementById('confirm-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('active');
+  // wait for fade-out transition then hide
+  setTimeout(() => { overlay.style.display = 'none'; }, 240);
+};
+
+window.confirmClearCart = function() {
+  closeConfirmModal();
+  setTimeout(() => {
+    cart = [];
+    saveCart();
+    updateCartUI();
+    renderProducts(); // reset all card buttons to "Tambah"
+  }, 120);
+};
+
+// ─── GO TO PRODUCTS (from empty cart) ────────
+window.goToProducts = function() {
+  closeCart();
+  setTimeout(() => {
+    const section = document.getElementById('products');
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 320); // wait for drawer close animation
+};
+
+// ─── CHECKOUT VIA WHATSAPP ───────────────────
+window.checkoutViaWA = function() {
+  if (cart.length === 0) return;
+  const total = getCartTotal();
+  const totalCount = getCartCount();
+
+  const lines = cart.map((item, i) => {
+    const subtotal = (parseFloat(item.price.replace(/[^0-9.]/g,'')) * item.qty).toFixed(2);
+    return `${i + 1}. ${item.name}\n   ${item.price} × ${item.qty} = $${subtotal}`;
+  }).join('\n');
+
+  const msg =
+`Halo Warung Indo Michigan! 🙏
+
+Saya ingin memesan produk berikut:
+
+━━━━━━━━━━━━━━━━━━━━
+🛒 *PESANAN SAYA*
+━━━━━━━━━━━━━━━━━━━━
+${lines}
+━━━━━━━━━━━━━━━━━━━━
+📦 Total Item : ${totalCount} item
+💰 Total Harga: *$${total.toFixed(2)}*
+━━━━━━━━━━━━━━━━━━━━
+
+Mohon konfirmasi ketersediaan stok dan info pengiriman. Terima kasih! 🙏`;
+
+  window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+};
+
 // ─── INIT ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   buildCategoryPills();
   showSkeletons(12);
-  // small delay for skeleton animation effect
   setTimeout(() => renderProducts(), 500);
+  updateCartUI(); // restore badge from localStorage on page load
+
+  // Close cart/modal on ESC
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const confirmActive = document.getElementById('confirm-overlay')?.classList.contains('active');
+      if (confirmActive) { closeConfirmModal(); return; }
+      window.closeCart();
+    }
+  });
 });
