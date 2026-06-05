@@ -6,9 +6,9 @@
 'use strict';
 
 // ─── CONFIG ───────────────────────────────────
-const WA_NUMBER = '12693800208';   // ganti dengan nomor WA asli (tanpa +)
-const WA_GROUP  = 'https://chat.whatsapp.com/REPLACE_WITH_REAL_LINK'; // ganti dengan link grup
-const FB_LINK   = 'https://www.facebook.com/levi.chen.11503/reels/';
+const WA_NUMBER = '16264614963';   // ganti dengan nomor WA asli (tanpa +)
+const WA_GROUP = 'https://chat.whatsapp.com/REPLACE_WITH_REAL_LINK'; // ganti dengan link grup
+const FB_LINK = 'https://www.facebook.com/levi.chen.11503/reels/';
 
 // ─── PRODUCT DATA (embedded, no fetch) ────────
 const PRODUCT_DATA = {
@@ -444,16 +444,16 @@ const PRODUCT_DATA = {
 
 // ─── STATE ────────────────────────────────────
 let activeCategory = 'all';
-let searchQuery    = '';
-let searchTimer    = null;
+let searchQuery = '';
+let searchTimer = null;
 
 // ─── DOM REFS ─────────────────────────────────
-const navbar      = document.getElementById('navbar');
-const pillsWrap   = document.getElementById('category-pills');
+const navbar = document.getElementById('navbar');
+const pillsWrap = document.getElementById('category-pills');
 const productGrid = document.getElementById('product-grid');
 const searchInput = document.getElementById('search-input');
 const resultsInfo = document.getElementById('results-info');
-const scrollTopBtn= document.getElementById('scroll-top');
+const scrollTopBtn = document.getElementById('scroll-top');
 
 // ─── NAVBAR SCROLL ────────────────────────────
 window.addEventListener('scroll', () => {
@@ -522,7 +522,7 @@ function buildCategoryPills() {
 }
 
 // ─── SELECT CATEGORY ──────────────────────────
-window.selectCategory = function(id) {
+window.selectCategory = function (id) {
   activeCategory = id;
   searchInput.value = '';
   searchQuery = '';
@@ -552,7 +552,7 @@ searchInput.addEventListener('input', (e) => {
 
 // ─── RENDER ───────────────────────────────────
 function renderProducts() {
-  const cats   = PRODUCT_DATA.categories;
+  const cats = PRODUCT_DATA.categories;
   const matched = [];
 
   cats.forEach(cat => {
@@ -587,7 +587,7 @@ function renderProducts() {
 
   productGrid.innerHTML = matched.map(item => {
     const qty = getCartQty(item.name);
-    return `<div class="product-card" data-product-name="${item.name.replace(/"/g,'&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}">
+    return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}">
       <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
       <div class="product-name">${highlight(item.name, searchQuery)}</div>
       <div class="product-price">${item.price}</div>
@@ -611,21 +611,21 @@ function renderProducts() {
 
 function highlight(text, q) {
   if (!q) return text;
-  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
   return text.replace(re, '<mark style="background:#FFF5CC;color:#00274C;border-radius:2px;padding:0 2px;">$1</mark>');
 }
 
 // ─── WA / FB HELPERS ──────────────────────────
-window.openWAOrder = function() {
+window.openWAOrder = function () {
   const msg = encodeURIComponent('Halo Warung Indo Michigan! 🙏 Saya ingin melihat daftar produk yang tersedia. Terima kasih!');
   window.open('https://wa.me/' + WA_NUMBER + '?text=' + msg, '_blank', 'noopener');
 };
 
-window.joinWAGroup = function() {
+window.joinWAGroup = function () {
   window.open(WA_GROUP, '_blank', 'noopener');
 };
 
-window.openFacebook = function() {
+window.openFacebook = function () {
   window.open(FB_LINK, '_blank', 'noopener');
 };
 
@@ -639,10 +639,10 @@ let cart = [];
 try {
   const saved = localStorage.getItem(CART_KEY);
   if (saved) cart = JSON.parse(saved);
-} catch(e) { cart = []; }
+} catch (e) { cart = []; }
 
 function saveCart() {
-  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch(e) {}
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) { }
 }
 
 function getCartItem(name) {
@@ -752,7 +752,7 @@ function renderCartItems() {
   }
 
   body.innerHTML = cart.map(item => {
-    const subtotal = (parseFloat(item.price.replace(/[^0-9.]/g,'')) * item.qty).toFixed(2);
+    const subtotal = (parseFloat(item.price.replace(/[^0-9.]/g, '')) * item.qty).toFixed(2);
     return `
       <div class="cart-item">
         <div class="cart-item-icon">${item.catIcon}</div>
@@ -773,12 +773,12 @@ function renderCartItems() {
 function escQ(s) { return s.replace(/'/g, "\\'"); }
 
 // expose for inline onclick in cart
-window.cartIncrease = function(name) {
+window.cartIncrease = function (name) {
   const item = getCartItem(name);
   if (item) { item.qty++; saveCart(); updateCartUI(); renderCardButton(name); bumpBadge(); }
 };
 
-window.cartDecrease = function(name) {
+window.cartDecrease = function (name) {
   decreaseFromCart(name);
 };
 
@@ -811,26 +811,26 @@ function buildCardBtn(name, price, catName, catIcon, qty) {
 }
 
 // ─── DRAWER OPEN / CLOSE ──────────────────────
-window.openCart = function() {
+window.openCart = function () {
   document.getElementById('cart-drawer').classList.add('open');
   document.getElementById('cart-overlay').classList.add('active');
   document.body.style.overflow = 'hidden';
   updateCartUI();
 };
 
-window.closeCart = function() {
+window.closeCart = function () {
   document.getElementById('cart-drawer').classList.remove('open');
   document.getElementById('cart-overlay').classList.remove('active');
   document.body.style.overflow = '';
 };
 
 // ─── CLEAR CART — custom modal ────────────────
-window.clearCart = function() {
+window.clearCart = function () {
   if (cart.length === 0) return;
   openConfirmModal();
 };
 
-window.openConfirmModal = function() {
+window.openConfirmModal = function () {
   const overlay = document.getElementById('confirm-overlay');
   if (!overlay) return;
   overlay.style.display = 'flex';
@@ -839,7 +839,7 @@ window.openConfirmModal = function() {
   overlay.classList.add('active');
 };
 
-window.closeConfirmModal = function() {
+window.closeConfirmModal = function () {
   const overlay = document.getElementById('confirm-overlay');
   if (!overlay) return;
   overlay.classList.remove('active');
@@ -847,7 +847,7 @@ window.closeConfirmModal = function() {
   setTimeout(() => { overlay.style.display = 'none'; }, 240);
 };
 
-window.confirmClearCart = function() {
+window.confirmClearCart = function () {
   closeConfirmModal();
   setTimeout(() => {
     cart = [];
@@ -858,7 +858,7 @@ window.confirmClearCart = function() {
 };
 
 // ─── GO TO PRODUCTS (from empty cart) ────────
-window.goToProducts = function() {
+window.goToProducts = function () {
   closeCart();
   setTimeout(() => {
     const section = document.getElementById('products');
@@ -867,18 +867,18 @@ window.goToProducts = function() {
 };
 
 // ─── CHECKOUT VIA WHATSAPP ───────────────────
-window.checkoutViaWA = function() {
+window.checkoutViaWA = function () {
   if (cart.length === 0) return;
   const total = getCartTotal();
   const totalCount = getCartCount();
 
   const lines = cart.map((item, i) => {
-    const subtotal = (parseFloat(item.price.replace(/[^0-9.]/g,'')) * item.qty).toFixed(2);
+    const subtotal = (parseFloat(item.price.replace(/[^0-9.]/g, '')) * item.qty).toFixed(2);
     return `${i + 1}. ${item.name}\n   ${item.price} × ${item.qty} = $${subtotal}`;
   }).join('\n');
 
   const msg =
-`Halo Warung Indo Michigan! 🙏
+    `Halo Warung Indo Michigan! 🙏
 
 Saya ingin memesan produk berikut:
 
