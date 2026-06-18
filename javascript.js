@@ -228,14 +228,14 @@ function renderProducts() {
       ? `<img src="${item.imageUrl}" alt="${item.name.replace(/"/g, '&quot;')}" loading="lazy" onerror="this.parentNode.classList.add('product-img--empty');this.remove()">`
       : '';
     const detailHref = item.slug ? `product.html?slug=${item.slug}` : '#';
-    return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}">
+    return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}" data-image-url="${item.imageUrl || ''}">
       <a href="${detailHref}" class="product-card-link">
         <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}">${imgHtml}</div>
         <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
         <div class="product-name">${highlight(item.name, searchQuery)}</div>
         <div class="product-price">${item.price}</div>
       </a>
-      <div class="card-btn-wrap">${buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty)}</div>
+      <div class="card-btn-wrap">${buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty, item.imageUrl)}</div>
     </div>`;
   }).join('');
 
@@ -298,12 +298,12 @@ function getCartQty(name) {
   return item ? item.qty : 0;
 }
 
-function addToCart(name, price, catName, catIcon) {
+function addToCart(name, price, catName, catIcon, imageUrl) {
   const existing = getCartItem(name);
   if (existing) {
     existing.qty++;
   } else {
-    cart.push({ name, price, catName, catIcon, qty: 1 });
+    cart.push({ name, price, catName, catIcon, imageUrl: imageUrl || null, qty: 1 });
   }
   saveCart();
   updateCartUI();
@@ -397,9 +397,12 @@ function renderCartItems() {
 
   body.innerHTML = cart.map(item => {
     const subtotal = (parseFloat(item.price.replace(/[^0-9.]/g, '')) * item.qty).toFixed(2);
+    const iconContent = item.imageUrl
+      ? `<img src="${item.imageUrl}" alt="" loading="lazy">`
+      : `<span>${item.catIcon || '📦'}</span>`;
     return `
       <div class="cart-item">
-        <div class="cart-item-icon">${item.catIcon}</div>
+        <div class="cart-item-icon">${iconContent}</div>
         <div class="cart-item-info">
           <div class="cart-item-name">${item.name}</div>
           <div class="cart-item-cat">${item.catName}</div>
@@ -434,23 +437,23 @@ function renderCardButton(name) {
     if (card.dataset.productName !== name) return;
     const btnWrap = card.querySelector('.card-btn-wrap');
     if (!btnWrap) return;
-    btnWrap.innerHTML = buildCardBtn(name, card.dataset.price, card.dataset.catName, card.dataset.catIcon, qty);
+    btnWrap.innerHTML = buildCardBtn(name, card.dataset.price, card.dataset.catName, card.dataset.catIcon, qty, card.dataset.imageUrl || '');
   });
 }
 
-function buildCardBtn(name, price, catName, catIcon, qty) {
+function buildCardBtn(name, price, catName, catIcon, qty, imageUrl) {
   const cartIcon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>`;
-  const safeN = escQ(name), safeP = escQ(price), safeCat = escQ(catName), safeIcon = escQ(catIcon);
+  const safeN = escQ(name), safeP = escQ(price), safeCat = escQ(catName), safeIcon = escQ(catIcon), safeImg = escQ(imageUrl || '');
 
   if (qty === 0) {
-    return `<button class="btn-add-cart" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}')">
+    return `<button class="btn-add-cart" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}','${safeImg}')">
               ${cartIcon} Tambah ke Keranjang
             </button>`;
   }
   return `<div class="qty-control">
             <button class="qty-btn" onclick="decreaseFromCart('${safeN}')" aria-label="Kurangi">−</button>
             <span class="qty-num">${qty}</span>
-            <button class="qty-btn" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}')" aria-label="Tambah">+</button>
+            <button class="qty-btn" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}','${safeImg}')" aria-label="Tambah">+</button>
           </div>`;
 }
 

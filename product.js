@@ -131,11 +131,14 @@ window.pdAddToCart = function () {
   if (existing) {
     existing.qty++;
   } else {
+    const images = p.images || [];
+    const primaryImg = images.find(i => i.isPrimary) || images[0] || null;
     cart.push({
       name: p.name,
       price: fmt(p.price),
       catName: p.category?.name || '',
       catIcon: p.category?.icon || '📦',
+      imageUrl: primaryImg?.url || null,
       qty: 1
     });
   }
