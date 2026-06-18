@@ -59,9 +59,11 @@ async function loadProductData() {
       const slug = product.category && product.category.slug;
       if (slug && catMap[slug]) {
         const price = parseFloat(product.price);
+        const primaryImg = product.images && product.images.find(img => img.isPrimary);
         catMap[slug].items.push({
           name: product.name,
-          price: `$${price.toFixed(2)}`
+          price: `$${price.toFixed(2)}`,
+          imageUrl: primaryImg ? primaryImg.url : null
         });
       }
     });
@@ -121,9 +123,9 @@ function buildSkeletons(count) {
   let html = '';
   for (let i = 0; i < count; i++) {
     html += `<div class="skeleton-card">
+      <div class="skeleton skeleton-img"></div>
       <div class="skeleton skeleton-line w-30"></div>
       <div class="skeleton skeleton-line w-80"></div>
-      <div class="skeleton skeleton-line w-60"></div>
       <div class="skeleton skeleton-line h-20 w-30"></div>
       <div class="skeleton skeleton-line h-30 w-100"></div>
     </div>`;
@@ -221,7 +223,11 @@ function renderProducts() {
 
   productGrid.innerHTML = matched.map(item => {
     const qty = getCartQty(item.name);
+    const imgHtml = item.imageUrl
+      ? `<img src="${item.imageUrl}" alt="${item.name.replace(/"/g, '&quot;')}" loading="lazy" onerror="this.parentNode.classList.add('product-img--empty');this.remove()">`
+      : '';
     return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}">
+      <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}">${imgHtml}</div>
       <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
       <div class="product-name">${highlight(item.name, searchQuery)}</div>
       <div class="product-price">${item.price}</div>
