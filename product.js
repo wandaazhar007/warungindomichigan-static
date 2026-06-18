@@ -1,0 +1,259 @@
+'use strict';
+
+const API_BASE = 'https://api-warungindomichigan-2026.up.railway.app';
+const WA_NUMBER = '16264614963';
+const CART_KEY  = 'wim_cart_v1';
+
+// ─── CART (shared localStorage dengan halaman utama) ───────────
+let cart = [];
+try {
+  const saved = localStorage.getItem(CART_KEY);
+  if (saved) cart = JSON.parse(saved);
+} catch (e) { cart = []; }
+
+function saveCart() {
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {}
+}
+
+function getCartItem(name) { return cart.find(i => i.name === name) || null; }
+function getCartQty(name)  { const i = getCartItem(name); return i ? i.qty : 0; }
+function getCartCount()    { return cart.reduce((s, i) => s + i.qty, 0); }
+
+function updateCartBadge() {
+  const badge = document.getElementById('nav-cart-badge');
+  if (badge) badge.textContent = getCartCount();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function fmt(price) {
+  return `$${parseFloat(price).toFixed(2)}`;
+}
+
+function getSlug() {
+  return new URLSearchParams(window.location.search).get('slug');
+}
+
+function escAttr(s) {
+  return s.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ─── STOCK BADGE ──────────────────────────────────────────────
+function stockBadge(stock, minStock) {
+  if (stock === 0)         return `<span class="pd-stock pd-stock--out">✕ Stok Habis</span>`;
+  if (stock <= minStock)   return `<span class="pd-stock pd-stock--low">⚠ Stok Terbatas (${stock})</span>`;
+  return                          `<span class="pd-stock pd-stock--ok">✓ Tersedia (${stock})</span>`;
+}
+
+// ─── BUILD ACTION BUTTON ──────────────────────────────────────
+function buildActionBtn(product, qty) {
+  if ((product.stock ?? 0) === 0) {
+    return `<button class="pd-add-btn" disabled>Stok Habis</button>`;
+  }
+  if (qty === 0) {
+    return `<button class="pd-add-btn" id="pd-add-btn" onclick="pdAddToCart()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Tambah ke Keranjang
+    </button>`;
+  }
+  return `<div class="pd-qty-control">
+    <button class="qty-btn" onclick="pdDecrease()" aria-label="Kurangi">−</button>
+    <span class="qty-num">${qty}</span>
+    <button class="qty-btn" onclick="pdIncrease()" aria-label="Tambah">+</button>
+  </div>`;
+}
+
+// ─── RENDER PRODUCT ───────────────────────────────────────────
+let currentProduct = null;
+
+function renderProduct(p) {
+  currentProduct = p;
+
+  const images = p.images || [];
+  const primaryImg = images.find(i => i.isPrimary) || images[0] || null;
+
+  const mainImgHtml = primaryImg
+    ? `<img src="${primaryImg.url}" alt="${escAttr(p.name)}" class="pd-main-img" id="pd-main-img" onerror="this.parentNode.innerHTML='<div class=\\'pd-img-placeholder\\'>📦</div>'">`
+    : `<div class="pd-img-placeholder">📦</div>`;
+
+  const thumbsHtml = images.length > 1
+    ? `<div class="pd-thumbs">${images.map(img =>
+        `<button class="pd-thumb${img.isPrimary ? ' active' : ''}" onclick="switchImg('${escAttr(img.url)}', this)" aria-label="Lihat gambar">
+          <img src="${escAttr(img.url)}" alt="${escAttr(img.altText || p.name)}" loading="lazy">
+        </button>`
+      ).join('')}</div>`
+    : '';
+
+  const priceHtml = p.comparePrice
+    ? `<span class="pd-price">${fmt(p.price)}</span><span class="pd-compare">${fmt(p.comparePrice)}</span>`
+    : `<span class="pd-price">${fmt(p.price)}</span>`;
+
+  const tagsHtml = p.tags && p.tags.length
+    ? `<div class="pd-tags">${p.tags.map(t => `<span class="pd-tag">${t}</span>`).join('')}</div>`
+    : '';
+
+  let metaRows = '';
+  if (p.unit)        metaRows += `<div class="pd-meta-row"><span>Satuan</span><span>${p.unit}</span></div>`;
+  if (p.weightGrams) metaRows += `<div class="pd-meta-row"><span>Berat</span><span>${p.weightGrams} gram</span></div>`;
+  if (p.sku)         metaRows += `<div class="pd-meta-row"><span>SKU</span><span>${p.sku}</span></div>`;
+  const metaHtml = metaRows ? `<div class="pd-meta">${metaRows}</div>` : '';
+
+  const catIcon = p.category?.icon || '📦';
+  const catName = p.category?.name || '';
+  const qty = getCartQty(p.name);
+
+  document.getElementById('pd-content').innerHTML = `
+    <div class="pd-layout">
+      <div class="pd-image-col">
+        <div class="pd-image-wrap">${mainImgHtml}</div>
+        ${thumbsHtml}
+      </div>
+      <div class="pd-info-col">
+        <div class="pd-cat-tag">${catIcon} ${catName}</div>
+        <h1 class="pd-name">${p.name}</h1>
+        <div class="pd-price-row">${priceHtml}</div>
+        ${stockBadge(p.stock ?? 0, p.minStock ?? 5)}
+        ${p.description ? `<p class="pd-desc">${p.description}</p>` : ''}
+        ${tagsHtml}
+        ${metaHtml}
+        <div id="pd-actions">${buildActionBtn(p, qty)}</div>
+        <button class="pd-wa-btn" onclick="orderViaWA()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.55 4.116 1.516 5.849L.057 23.454a.5.5 0 0 0 .617.619l5.7-1.496A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.806 9.806 0 0 1-4.99-1.365l-.357-.213-3.706.973.988-3.618-.233-.372A9.784 9.784 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"/></svg>
+          Pesan via WhatsApp
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.title = `${p.name} — Warung Indo Michigan`;
+}
+
+// ─── CART ACTIONS ─────────────────────────────────────────────
+window.pdAddToCart = function () {
+  if (!currentProduct) return;
+  const p = currentProduct;
+  const existing = getCartItem(p.name);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({
+      name: p.name,
+      price: fmt(p.price),
+      catName: p.category?.name || '',
+      catIcon: p.category?.icon || '📦',
+      qty: 1
+    });
+  }
+  saveCart();
+  updateCartBadge();
+  refreshActions();
+  showToast('Ditambahkan ke keranjang! 🛒');
+};
+
+window.pdIncrease = function () {
+  if (!currentProduct) return;
+  const existing = getCartItem(currentProduct.name);
+  if (existing) { existing.qty++; saveCart(); updateCartBadge(); refreshActions(); }
+};
+
+window.pdDecrease = function () {
+  if (!currentProduct) return;
+  const existing = getCartItem(currentProduct.name);
+  if (!existing) return;
+  existing.qty--;
+  if (existing.qty <= 0) cart = cart.filter(i => i.name !== currentProduct.name);
+  saveCart();
+  updateCartBadge();
+  refreshActions();
+};
+
+function refreshActions() {
+  const el = document.getElementById('pd-actions');
+  if (el && currentProduct) el.innerHTML = buildActionBtn(currentProduct, getCartQty(currentProduct.name));
+}
+
+// ─── WA ORDER ─────────────────────────────────────────────────
+window.orderViaWA = function () {
+  if (!currentProduct) return;
+  const msg = encodeURIComponent(
+    `Halo Warung Indo Michigan! 🙏\n\nSaya ingin memesan:\n*${currentProduct.name}* — ${fmt(currentProduct.price)}\n\nMohon konfirmasi ketersediaan stok dan info pengiriman. Terima kasih! 🙏`
+  );
+  window.open('https://wa.me/' + WA_NUMBER + '?text=' + msg, '_blank', 'noopener');
+};
+
+// ─── IMAGE SWITCH ─────────────────────────────────────────────
+window.switchImg = function (url, btn) {
+  const main = document.getElementById('pd-main-img');
+  if (main) main.src = url;
+  document.querySelectorAll('.pd-thumb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+};
+
+// ─── TOAST ────────────────────────────────────────────────────
+function showToast(msg) {
+  const toast = document.getElementById('pd-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ─── SKELETON ─────────────────────────────────────────────────
+function showSkeleton() {
+  document.getElementById('pd-content').innerHTML = `
+    <div class="pd-layout">
+      <div class="pd-image-col">
+        <div class="skeleton-block"></div>
+      </div>
+      <div class="pd-info-col" style="gap:14px">
+        <div class="skeleton skeleton-line w-30" style="height:14px"></div>
+        <div class="skeleton skeleton-line w-80" style="height:30px"></div>
+        <div class="skeleton skeleton-line w-30" style="height:26px"></div>
+        <div class="skeleton skeleton-line w-40" style="height:24px;border-radius:99px"></div>
+        <div class="skeleton skeleton-line w-100" style="height:12px"></div>
+        <div class="skeleton skeleton-line w-90" style="height:12px"></div>
+        <div class="skeleton skeleton-line w-70" style="height:12px"></div>
+        <div class="skeleton skeleton-line w-100" style="height:52px;border-radius:99px;margin-top:8px"></div>
+      </div>
+    </div>`;
+}
+
+// ─── ERROR ────────────────────────────────────────────────────
+function showError(msg) {
+  document.getElementById('pd-content').innerHTML = `
+    <div class="pd-error">
+      <div class="pd-error-icon">😕</div>
+      <h2>${msg}</h2>
+      <a href="index.html" class="pd-back-btn">← Kembali ke Katalog</a>
+    </div>`;
+}
+
+// ─── NAVBAR SCROLL ────────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+if (navbar) {
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+async function loadProduct() {
+  const slug = getSlug();
+  if (!slug) { window.location.href = 'index.html'; return; }
+
+  showSkeleton();
+
+  try {
+    const res = await fetch(`${API_BASE}/api/products/${slug}`);
+    if (res.status === 404) { showError('Produk tidak ditemukan.'); return; }
+    if (!res.ok) throw new Error('API error');
+    const product = await res.json();
+    renderProduct(product);
+  } catch (err) {
+    showError('Gagal memuat produk. Periksa koneksi internet Anda.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartBadge();
+  loadProduct();
+});

@@ -62,6 +62,7 @@ async function loadProductData() {
         const primaryImg = product.images && product.images.find(img => img.isPrimary);
         catMap[slug].items.push({
           name: product.name,
+          slug: product.slug,
           price: `$${price.toFixed(2)}`,
           imageUrl: primaryImg ? primaryImg.url : null
         });
@@ -226,11 +227,14 @@ function renderProducts() {
     const imgHtml = item.imageUrl
       ? `<img src="${item.imageUrl}" alt="${item.name.replace(/"/g, '&quot;')}" loading="lazy" onerror="this.parentNode.classList.add('product-img--empty');this.remove()">`
       : '';
+    const detailHref = item.slug ? `product.html?slug=${item.slug}` : '#';
     return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}">
-      <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}">${imgHtml}</div>
-      <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
-      <div class="product-name">${highlight(item.name, searchQuery)}</div>
-      <div class="product-price">${item.price}</div>
+      <a href="${detailHref}" class="product-card-link">
+        <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}">${imgHtml}</div>
+        <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
+        <div class="product-name">${highlight(item.name, searchQuery)}</div>
+        <div class="product-price">${item.price}</div>
+      </a>
       <div class="card-btn-wrap">${buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty)}</div>
     </div>`;
   }).join('');

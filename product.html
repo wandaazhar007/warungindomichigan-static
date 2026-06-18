@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Produk — Warung Indo Michigan</title>
+  <meta name="description" content="Detail produk Warung Indo Michigan — Toko Bahan Makanan Indonesia di Michigan." />
+  <meta name="theme-color" content="#00274C" />
+  <link rel="icon" type="image/png" href="logo-icon-warungindomichigan.png" />
+  <link rel="apple-touch-icon" href="logo-icon-warungindomichigan.png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════ -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <a class="nav-logo" href="index.html" aria-label="Warung Indo Michigan — Home">
+      <div class="logo-badge" aria-hidden="true">WIM</div>
+      <div class="logo-text">
+        <span class="brand">Warung Indo Michigan</span>
+        <span class="sub">Indonesian Grocery 🇮🇩</span>
+      </div>
+    </a>
+
+    <div class="nav-right">
+      <!-- Cart Button (navigates back to catalog) -->
+      <a href="index.html" class="nav-cart-btn" id="nav-cart-btn" aria-label="Kembali ke katalog dan lihat keranjang">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+        </svg>
+        <span class="nav-cart-label">Keranjang</span>
+        <span class="nav-cart-badge" id="nav-cart-badge" aria-live="polite">0</span>
+      </a>
+
+      <!-- WhatsApp Button -->
+      <button class="nav-wa-btn" onclick="orderViaWA()" aria-label="Order via WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path
+            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+          <path
+            d="M12 0C5.373 0 0 5.373 0 12c0 2.123.55 4.116 1.516 5.849L.057 23.454a.5.5 0 0 0 .617.619l5.7-1.496A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.806 9.806 0 0 1-4.99-1.365l-.357-.213-3.706.973.988-3.618-.233-.372A9.784 9.784 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z" />
+        </svg>
+        Order via WhatsApp
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+     PRODUCT DETAIL
+══════════════════════════════════════════ -->
+  <main style="padding-top: 68px; min-height: 80vh;">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 5rem;">
+
+      <!-- Back link -->
+      <a href="index.html" class="pd-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Kembali ke Katalog
+      </a>
+
+      <!-- Dynamic content rendered by product.js -->
+      <div id="pd-content"></div>
+
+    </div>
+  </main>
+
+  <!-- Toast notification -->
+  <div id="pd-toast" class="pd-toast" aria-live="polite"></div>
+
+  <!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+  <footer role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo-badge" aria-hidden="true">WIM</div>
+        <div class="footer-brand-text">
+          <div class="name">Warung Indo Michigan</div>
+          <div class="tagline">Authentic Indonesian Grocery Store in Michigan</div>
+        </div>
+      </div>
+      <div class="footer-copy">
+        <div>
+          Build with ❤️ by
+          <a href="https://instagram.com/wanda_azharr/" target="_blank" rel="noopener">Wanda Azhar</a>
+          in Michigan, USA.
+        </div>
+        <div>Copyright &copy; 2026 Warung Indo Michigan</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="product.js"></script>
+</body>
+
+</html>
