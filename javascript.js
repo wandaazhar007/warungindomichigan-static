@@ -211,7 +211,7 @@ function buildProductCard(item) {
     : `<div class="product-price">${item.price}</div>`;
 
   const featuredBadge = item.isFeatured
-    ? `<div class="product-featured-badge">Featured</div>`
+    ? `<div class="product-featured-badge">Sale</div>`
     : '';
 
   const cardBtn = isOutOfStock
