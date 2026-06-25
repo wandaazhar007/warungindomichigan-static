@@ -692,6 +692,72 @@ section { padding: 5rem 2rem; }
 .no-results h3 { font-size: 1.1rem; color: var(--gray-600); margin-bottom: 0.5rem; }
 .no-results p  { font-size: 14px; }
 
+/* ─── LOAD MORE ─── */
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 0 1rem;
+}
+
+.btn-load-more {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0.85rem 2.5rem;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  box-shadow: 0 4px 18px rgba(0,39,76,0.18);
+}
+.btn-load-more:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,39,76,0.25);
+  background: #003a6e;
+}
+.btn-load-more:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btn-load-more-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: opacity 0.2s;
+}
+.btn-load-more-count {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+  transition: opacity 0.2s;
+}
+.btn-load-more-spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: lm-spin 0.7s linear infinite;
+}
+.btn-load-more.loading .btn-load-more-text,
+.btn-load-more.loading .btn-load-more-count { opacity: 0; }
+.btn-load-more.loading .btn-load-more-spinner { display: block; }
+.btn-load-more.loading {
+  pointer-events: none;
+  min-width: 56px;
+  padding: 0.85rem 1.4rem;
+}
+
+@keyframes lm-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ─── CONTACT SECTION ─── */
 #contact { background: var(--blue); position: relative; overflow: hidden; }
 

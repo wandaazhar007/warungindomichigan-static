@@ -80,9 +80,12 @@ async function loadProductData() {
 }
 
 // ─── STATE ────────────────────────────────────
+const PAGE_SIZE = 24;
 let activeCategory = 'all';
 let searchQuery = '';
 let searchTimer = null;
+let currentMatched = [];
+let visibleCount = PAGE_SIZE;
 
 // ─── DOM REFS ─────────────────────────────────
 const navbar = document.getElementById('navbar');
@@ -188,70 +191,130 @@ searchInput.addEventListener('input', (e) => {
 });
 
 // ─── RENDER ───────────────────────────────────
+function buildProductCard(item) {
+  const qty = getCartQty(item.name);
+  const imgHtml = item.imageUrl
+    ? `<img src="${item.imageUrl}" alt="${item.name.replace(/"/g, '&quot;')}" loading="lazy" onerror="this.parentNode.classList.add('product-img--empty');this.remove()">`
+    : '';
+  const detailHref = item.slug ? `product.html?slug=${item.slug}` : '#';
+  return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}" data-image-url="${item.imageUrl || ''}">
+    <a href="${detailHref}" class="product-card-link">
+      <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}">${imgHtml}</div>
+      <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
+      <div class="product-name">${highlight(item.name, searchQuery)}</div>
+      <div class="product-price">${item.price}</div>
+    </a>
+    <div class="card-btn-wrap">${buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty, item.imageUrl)}</div>
+  </div>`;
+}
+
+function animateNewCards(cards, startIndex) {
+  cards.forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(14px)';
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, i * 22);
+  });
+}
+
+function renderLoadMoreBtn() {
+  const existing = document.getElementById('load-more-wrap');
+  if (existing) existing.remove();
+
+  if (visibleCount >= currentMatched.length) return;
+
+  const remaining = currentMatched.length - visibleCount;
+  const wrap = document.createElement('div');
+  wrap.id = 'load-more-wrap';
+  wrap.className = 'load-more-wrap';
+  wrap.innerHTML = `
+    <button class="btn-load-more" id="btn-load-more" onclick="loadMore()">
+      <span class="btn-load-more-text">Load More</span>
+      <span class="btn-load-more-count">${remaining} more product${remaining !== 1 ? 's' : ''}</span>
+      <span class="btn-load-more-spinner" aria-hidden="true"></span>
+    </button>`;
+  productGrid.after(wrap);
+}
+
 function renderProducts() {
   const cats = PRODUCT_DATA.categories;
-  const matched = [];
+  currentMatched = [];
 
   cats.forEach(cat => {
     if (activeCategory !== 'all' && cat.id !== activeCategory) return;
     cat.items.forEach(item => {
       const hay = (item.name + ' ' + cat.name).toLowerCase();
       if (!searchQuery || hay.includes(searchQuery)) {
-        matched.push({ ...item, catName: cat.name, catIcon: cat.icon });
+        currentMatched.push({ ...item, catName: cat.name, catIcon: cat.icon });
       }
     });
   });
 
+  visibleCount = PAGE_SIZE;
+
   // results info
   if (searchQuery) {
-    resultsInfo.textContent = `${matched.length} product${matched.length !== 1 ? 's' : ''} found for "${searchInput.value.trim()}"`;
+    resultsInfo.textContent = `${currentMatched.length} product${currentMatched.length !== 1 ? 's' : ''} found for "${searchInput.value.trim()}"`;
   } else if (activeCategory !== 'all') {
     const cat = cats.find(c => c.id === activeCategory);
-    resultsInfo.textContent = `${matched.length} product${matched.length !== 1 ? 's' : ''} in ${cat ? cat.name : ''}`;
+    resultsInfo.textContent = `${currentMatched.length} product${currentMatched.length !== 1 ? 's' : ''} in ${cat ? cat.name : ''}`;
   } else {
-    resultsInfo.textContent = `Showing ${matched.length} products`;
+    resultsInfo.textContent = `Showing ${currentMatched.length} products`;
   }
 
-  if (matched.length === 0) {
+  if (currentMatched.length === 0) {
     productGrid.innerHTML = `<div class="no-results">
       <div class="nr-icon">🔍</div>
       <h3>No products found</h3>
       <p>Try a different keyword or select another category.</p>
     </div>`;
+    const existing = document.getElementById('load-more-wrap');
+    if (existing) existing.remove();
     return;
   }
 
+  const slice = currentMatched.slice(0, visibleCount);
+  productGrid.innerHTML = slice.map(buildProductCard).join('');
 
-  productGrid.innerHTML = matched.map(item => {
-    const qty = getCartQty(item.name);
-    const imgHtml = item.imageUrl
-      ? `<img src="${item.imageUrl}" alt="${item.name.replace(/"/g, '&quot;')}" loading="lazy" onerror="this.parentNode.classList.add('product-img--empty');this.remove()">`
-      : '';
-    const detailHref = item.slug ? `product.html?slug=${item.slug}` : '#';
-    return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}" data-image-url="${item.imageUrl || ''}">
-      <a href="${detailHref}" class="product-card-link">
-        <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}">${imgHtml}</div>
-        <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
-        <div class="product-name">${highlight(item.name, searchQuery)}</div>
-        <div class="product-price">${item.price}</div>
-      </a>
-      <div class="card-btn-wrap">${buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty, item.imageUrl)}</div>
-    </div>`;
-  }).join('');
-
-  // stagger fade-in
   requestAnimationFrame(() => {
-    productGrid.querySelectorAll('.product-card').forEach((card, i) => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(14px)';
-      setTimeout(() => {
-        card.style.transition = 'opacity 0.28s ease, transform 0.28s ease';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-      }, i * 22);
-    });
+    animateNewCards([...productGrid.querySelectorAll('.product-card')]);
   });
+
+  renderLoadMoreBtn();
 }
+
+window.loadMore = function () {
+  const btn = document.getElementById('btn-load-more');
+  if (!btn) return;
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  setTimeout(() => {
+    const from = visibleCount;
+    visibleCount = Math.min(visibleCount + PAGE_SIZE, currentMatched.length);
+
+    const newSlice = currentMatched.slice(from, visibleCount);
+    const fragment = newSlice.map(buildProductCard).join('');
+
+    const temp = document.createElement('div');
+    temp.innerHTML = fragment;
+    const newCards = [...temp.children];
+
+    newCards.forEach(card => productGrid.appendChild(card));
+
+    requestAnimationFrame(() => {
+      animateNewCards(newCards);
+    });
+
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    renderLoadMoreBtn();
+  }, 420);
+};
 
 function highlight(text, q) {
   if (!q) return text;
