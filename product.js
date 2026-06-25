@@ -39,26 +39,26 @@ function escAttr(s) {
 
 // ─── STOCK BADGE ──────────────────────────────────────────────
 function stockBadge(stock, minStock) {
-  if (stock === 0)         return `<span class="pd-stock pd-stock--out">✕ Stok Habis</span>`;
-  if (stock <= minStock)   return `<span class="pd-stock pd-stock--low">⚠ Stok Terbatas (${stock})</span>`;
-  return                          `<span class="pd-stock pd-stock--ok">✓ Tersedia (${stock})</span>`;
+  if (stock === 0)         return `<span class="pd-stock pd-stock--out">✕ Out of Stock</span>`;
+  if (stock <= minStock)   return `<span class="pd-stock pd-stock--low">⚠ Low Stock (${stock})</span>`;
+  return                          `<span class="pd-stock pd-stock--ok">✓ In Stock (${stock})</span>`;
 }
 
 // ─── BUILD ACTION BUTTON ──────────────────────────────────────
 function buildActionBtn(product, qty) {
   if ((product.stock ?? 0) === 0) {
-    return `<button class="pd-add-btn" disabled>Stok Habis</button>`;
+    return `<button class="pd-add-btn" disabled>Out of Stock</button>`;
   }
   if (qty === 0) {
     return `<button class="pd-add-btn" id="pd-add-btn" onclick="pdAddToCart()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      Tambah ke Keranjang
+      Add to Cart
     </button>`;
   }
   return `<div class="pd-qty-control">
-    <button class="qty-btn" onclick="pdDecrease()" aria-label="Kurangi">−</button>
+    <button class="qty-btn" onclick="pdDecrease()" aria-label="Decrease">−</button>
     <span class="qty-num">${qty}</span>
-    <button class="qty-btn" onclick="pdIncrease()" aria-label="Tambah">+</button>
+    <button class="qty-btn" onclick="pdIncrease()" aria-label="Increase">+</button>
   </div>`;
 }
 
@@ -92,8 +92,8 @@ function renderProduct(p) {
     : '';
 
   let metaRows = '';
-  if (p.unit)        metaRows += `<div class="pd-meta-row"><span>Satuan</span><span>${p.unit}</span></div>`;
-  if (p.weightGrams) metaRows += `<div class="pd-meta-row"><span>Berat</span><span>${p.weightGrams} gram</span></div>`;
+  if (p.unit)        metaRows += `<div class="pd-meta-row"><span>Unit</span><span>${p.unit}</span></div>`;
+  if (p.weightGrams) metaRows += `<div class="pd-meta-row"><span>Weight</span><span>${p.weightGrams} g</span></div>`;
   if (p.sku)         metaRows += `<div class="pd-meta-row"><span>SKU</span><span>${p.sku}</span></div>`;
   const metaHtml = metaRows ? `<div class="pd-meta">${metaRows}</div>` : '';
 
@@ -145,7 +145,7 @@ window.pdAddToCart = function () {
   saveCart();
   updateCartBadge();
   refreshActions();
-  showToast('Ditambahkan ke keranjang! 🛒');
+  showToast('Added to cart! 🛒');
 };
 
 window.pdIncrease = function () {
@@ -174,7 +174,7 @@ function refreshActions() {
 window.orderViaWA = function () {
   if (!currentProduct) return;
   const msg = encodeURIComponent(
-    `Halo Warung Indo Michigan! 🙏\n\nSaya ingin memesan:\n*${currentProduct.name}* — ${fmt(currentProduct.price)}\n\nMohon konfirmasi ketersediaan stok dan info pengiriman. Terima kasih! 🙏`
+    `Hi Warung Indo Michigan! 🙏\n\nI'd like to order:\n*${currentProduct.name}* — ${fmt(currentProduct.price)}\n\nPlease confirm stock availability and delivery details. Thank you! 🙏`
   );
   window.open('https://wa.me/' + WA_NUMBER + '?text=' + msg, '_blank', 'noopener');
 };
@@ -222,7 +222,7 @@ function showError(msg) {
     <div class="pd-error">
       <div class="pd-error-icon">😕</div>
       <h2>${msg}</h2>
-      <a href="index.html" class="pd-back-btn">← Kembali ke Katalog</a>
+      <a href="index.html" class="pd-back-btn">← Back to Catalog</a>
     </div>`;
 }
 
@@ -243,12 +243,12 @@ async function loadProduct() {
 
   try {
     const res = await fetch(`${API_BASE}/api/products/${slug}`);
-    if (res.status === 404) { showError('Produk tidak ditemukan.'); return; }
+    if (res.status === 404) { showError('Product not found.'); return; }
     if (!res.ok) throw new Error('API error');
     const product = await res.json();
     renderProduct(product);
   } catch (err) {
-    showError('Gagal memuat produk. Periksa koneksi internet Anda.');
+    showError('Failed to load product. Please check your internet connection.');
   }
 }
 

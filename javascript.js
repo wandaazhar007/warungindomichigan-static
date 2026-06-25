@@ -73,7 +73,7 @@ async function loadProductData() {
       categories: Object.values(catMap).filter(c => c.items.length > 0)
     };
   } catch (err) {
-    console.warn('API tidak tersedia, menggunakan data lokal.', err);
+    console.warn('API unavailable, falling back to local data.', err);
     const res = await fetch('./products.json');
     PRODUCT_DATA = await res.json();
   }
@@ -144,7 +144,7 @@ function buildCategoryPills() {
   const total = cats.reduce((a, c) => a + c.items.length, 0);
 
   let html = `<button class="cat-pill active" data-id="all" onclick="selectCategory('all')">
-    <span class="pill-icon">🏪</span> Semua
+    <span class="pill-icon">🏪</span> All
     <span class="pill-count">${total}</span>
   </button>`;
 
@@ -204,19 +204,19 @@ function renderProducts() {
 
   // results info
   if (searchQuery) {
-    resultsInfo.textContent = `${matched.length} produk ditemukan untuk "${searchInput.value.trim()}"`;
+    resultsInfo.textContent = `${matched.length} product${matched.length !== 1 ? 's' : ''} found for "${searchInput.value.trim()}"`;
   } else if (activeCategory !== 'all') {
     const cat = cats.find(c => c.id === activeCategory);
-    resultsInfo.textContent = `${matched.length} produk dalam kategori ${cat ? cat.name : ''}`;
+    resultsInfo.textContent = `${matched.length} product${matched.length !== 1 ? 's' : ''} in ${cat ? cat.name : ''}`;
   } else {
-    resultsInfo.textContent = `Menampilkan ${matched.length} produk`;
+    resultsInfo.textContent = `Showing ${matched.length} products`;
   }
 
   if (matched.length === 0) {
     productGrid.innerHTML = `<div class="no-results">
       <div class="nr-icon">🔍</div>
-      <h3>Produk tidak ditemukan</h3>
-      <p>Coba kata kunci lain atau pilih kategori berbeda.</p>
+      <h3>No products found</h3>
+      <p>Try a different keyword or select another category.</p>
     </div>`;
     return;
   }
@@ -261,7 +261,7 @@ function highlight(text, q) {
 
 // ─── WA / FB HELPERS ──────────────────────────
 window.openWAOrder = function () {
-  const msg = encodeURIComponent('Halo Warung Indo Michigan! 🙏 Saya ingin melihat daftar produk yang tersedia. Terima kasih!');
+  const msg = encodeURIComponent('Hi Warung Indo Michigan! 🙏 I would like to see the list of available products. Thank you!');
   window.open('https://wa.me/' + WA_NUMBER + '?text=' + msg, '_blank', 'noopener');
 };
 
@@ -362,7 +362,7 @@ function updateCartUI() {
 
   // Header count
   const headerCount = document.getElementById('cart-header-count');
-  if (headerCount) headerCount.textContent = `${count} item`;
+  if (headerCount) headerCount.textContent = `${count} item${count !== 1 ? 's' : ''}`;
 
   // Total
   const totalEl = document.getElementById('cart-total-value');
@@ -385,11 +385,11 @@ function renderCartItems() {
     body.innerHTML = `
       <div class="cart-empty">
         <div class="cart-empty-icon">🛒</div>
-        <h3>Keranjang masih kosong</h3>
-        <p>Yuk tambahkan produk Indonesia favoritmu!</p>
+        <h3>Your cart is empty</h3>
+        <p>Add your favorite Indonesian products!</p>
         <button class="cart-empty-btn" onclick="goToProducts()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          Cari Produk
+          Browse Products
         </button>
       </div>`;
     return;
@@ -409,9 +409,9 @@ function renderCartItems() {
           <div class="cart-item-price">${item.price} × ${item.qty} = <span class="cart-item-subtotal">$${subtotal}</span></div>
         </div>
         <div class="cart-item-qty">
-          <button class="qty-btn" onclick="cartDecrease('${escQ(item.name)}')" aria-label="Kurangi">−</button>
+          <button class="qty-btn" onclick="cartDecrease('${escQ(item.name)}')" aria-label="Decrease">−</button>
           <span class="qty-num">${item.qty}</span>
-          <button class="qty-btn" onclick="cartIncrease('${escQ(item.name)}')" aria-label="Tambah">+</button>
+          <button class="qty-btn" onclick="cartIncrease('${escQ(item.name)}')" aria-label="Increase">+</button>
         </div>
       </div>`;
   }).join('');
@@ -447,13 +447,13 @@ function buildCardBtn(name, price, catName, catIcon, qty, imageUrl) {
 
   if (qty === 0) {
     return `<button class="btn-add-cart" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}','${safeImg}')">
-              ${cartIcon} Tambah ke Keranjang
+              ${cartIcon} Add to Cart
             </button>`;
   }
   return `<div class="qty-control">
-            <button class="qty-btn" onclick="decreaseFromCart('${safeN}')" aria-label="Kurangi">−</button>
+            <button class="qty-btn" onclick="decreaseFromCart('${safeN}')" aria-label="Decrease">−</button>
             <span class="qty-num">${qty}</span>
-            <button class="qty-btn" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}','${safeImg}')" aria-label="Tambah">+</button>
+            <button class="qty-btn" onclick="addToCart('${safeN}','${safeP}','${safeCat}','${safeIcon}','${safeImg}')" aria-label="Increase">+</button>
           </div>`;
 }
 
@@ -525,20 +525,20 @@ window.checkoutViaWA = function () {
   }).join('\n');
 
   const msg =
-    `Halo Warung Indo Michigan! 🙏
+    `Hi Warung Indo Michigan! 🙏
 
-Saya ingin memesan produk berikut:
+I'd like to order the following:
 
 ━━━━━━━━━━━━━━━━━━━━
-🛒 *PESANAN SAYA*
+🛒 *MY ORDER*
 ━━━━━━━━━━━━━━━━━━━━
 ${lines}
 ━━━━━━━━━━━━━━━━━━━━
-📦 Total Item : ${totalCount} item
-💰 Total Harga: *$${total.toFixed(2)}*
+📦 Total Items: ${totalCount} item${totalCount !== 1 ? 's' : ''}
+💰 Total Price: *$${total.toFixed(2)}*
 ━━━━━━━━━━━━━━━━━━━━
 
-Mohon konfirmasi ketersediaan stok dan info pengiriman. Terima kasih! 🙏`;
+Please confirm stock availability and delivery details. Thank you! 🙏`;
 
   window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
 };
