@@ -572,6 +572,7 @@ section { padding: 5rem 2rem; }
   background: var(--gray-50);
   margin-bottom: 4px;
   flex-shrink: 0;
+  position: relative;
 }
 
 .product-img img {
@@ -618,6 +619,65 @@ section { padding: 5rem 2rem; }
   font-size: 18px;
   font-weight: 600;
   color: var(--blue);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.product-compare-price {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray-400);
+  text-decoration: line-through;
+}
+
+/* ─── OUT OF STOCK ─── */
+.product-img--oos img {
+  opacity: 0.45;
+}
+
+.product-oos-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: inherit;
+}
+
+.product-oos-overlay span {
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 99px;
+}
+
+.btn-oos {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ─── FEATURED BADGE ─── */
+.product-featured-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--maize);
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 99px;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .product-order-btn {

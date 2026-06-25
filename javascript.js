@@ -64,7 +64,10 @@ async function loadProductData() {
           name: product.name,
           slug: product.slug,
           price: `$${price.toFixed(2)}`,
-          imageUrl: primaryImg ? primaryImg.url : null
+          comparePrice: product.comparePrice ? `$${parseFloat(product.comparePrice).toFixed(2)}` : null,
+          imageUrl: primaryImg ? primaryImg.url : null,
+          stock: product.stock ?? null,
+          isFeatured: product.isFeatured === true
         });
       }
     });
@@ -193,18 +196,38 @@ searchInput.addEventListener('input', (e) => {
 // ─── RENDER ───────────────────────────────────
 function buildProductCard(item) {
   const qty = getCartQty(item.name);
+  const isOutOfStock = item.stock === 0;
+
   const imgHtml = item.imageUrl
     ? `<img src="${item.imageUrl}" alt="${item.name.replace(/"/g, '&quot;')}" loading="lazy" onerror="this.parentNode.classList.add('product-img--empty');this.remove()">`
     : '';
+
+  const outOfStockOverlay = isOutOfStock
+    ? `<div class="product-oos-overlay"><span>Out of Stock</span></div>`
+    : '';
+
+  const priceHtml = item.comparePrice
+    ? `<div class="product-price">${item.price} <span class="product-compare-price">${item.comparePrice}</span></div>`
+    : `<div class="product-price">${item.price}</div>`;
+
+  const featuredBadge = item.isFeatured
+    ? `<div class="product-featured-badge">Featured</div>`
+    : '';
+
+  const cardBtn = isOutOfStock
+    ? `<button class="btn-add-cart btn-oos" disabled>Out of Stock</button>`
+    : buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty, item.imageUrl);
+
   const detailHref = item.slug ? `product.html?slug=${item.slug}` : '#';
-  return `<div class="product-card" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}" data-image-url="${item.imageUrl || ''}">
+  return `<div class="product-card${isOutOfStock ? ' product-card--oos' : ''}" data-product-name="${item.name.replace(/"/g, '&quot;')}" data-price="${item.price}" data-cat-name="${item.catName}" data-cat-icon="${item.catIcon}" data-image-url="${item.imageUrl || ''}">
+    ${featuredBadge}
     <a href="${detailHref}" class="product-card-link">
-      <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}">${imgHtml}</div>
+      <div class="product-img${item.imageUrl ? '' : ' product-img--empty'}${isOutOfStock ? ' product-img--oos' : ''}">${imgHtml}${outOfStockOverlay}</div>
       <div class="product-cat-tag">${item.catIcon} ${item.catName}</div>
       <div class="product-name">${highlight(item.name, searchQuery)}</div>
-      <div class="product-price">${item.price}</div>
+      ${priceHtml}
     </a>
-    <div class="card-btn-wrap">${buildCardBtn(item.name, item.price, item.catName, item.catIcon, qty, item.imageUrl)}</div>
+    <div class="card-btn-wrap">${cardBtn}</div>
   </div>`;
 }
 
@@ -253,7 +276,10 @@ function renderProducts() {
     });
   });
 
-  currentMatched.sort((a, b) => b.name.localeCompare(a.name));
+  currentMatched.sort((a, b) => {
+    if (a.isFeatured !== b.isFeatured) return a.isFeatured ? -1 : 1;
+    return b.name.localeCompare(a.name);
+  });
 
   visibleCount = PAGE_SIZE;
 
