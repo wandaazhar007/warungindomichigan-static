@@ -222,7 +222,7 @@ function showError(msg) {
     <div class="pd-error">
       <div class="pd-error-icon">😕</div>
       <h2>${msg}</h2>
-      <a href="index.html" class="pd-back-btn">← Back to Catalog</a>
+      <a href="index.html#products" class="pd-back-btn">← Back to Catalog</a>
     </div>`;
 }
 
