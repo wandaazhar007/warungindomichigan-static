@@ -253,6 +253,8 @@ function renderProducts() {
     });
   });
 
+  currentMatched.sort((a, b) => b.name.localeCompare(a.name));
+
   visibleCount = PAGE_SIZE;
 
   // results info
