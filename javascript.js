@@ -174,6 +174,12 @@ window.selectCategory = function (id) {
     btn.classList.toggle('active', btn.dataset.id === id);
   });
 
+  const toolbar = document.getElementById('products-toolbar');
+  if (toolbar) {
+    const offset = toolbar.getBoundingClientRect().top + window.scrollY - 8;
+    window.scrollTo({ top: offset, behavior: 'smooth' });
+  }
+
   showSkeletons(8);
   setTimeout(() => renderProducts(), 380);
 };
