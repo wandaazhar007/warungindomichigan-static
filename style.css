@@ -983,6 +983,23 @@ footer {
 .footer-brand-text .name { font-size: 14px; font-weight: 600; color: var(--white); }
 .footer-brand-text .tagline { font-size: 11px; color: rgba(255,255,255,0.4); }
 
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  flex: 1;
+}
+
+.footer-links a {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  transition: var(--transition);
+}
+
+.footer-links a:hover { color: var(--maize); }
+
 .footer-copy {
   font-size: 12px;
   color: rgba(255,255,255,0.4);
@@ -992,6 +1009,64 @@ footer {
 
 .footer-copy a { color: rgba(255,203,5,0.7); transition: var(--transition); }
 .footer-copy a:hover { color: var(--maize); }
+
+/* ─── LEGAL / POLICY PAGES ─── */
+.legal-page main {
+  padding-top: 68px;
+  min-height: 80vh;
+}
+
+.legal-content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+.legal-content .pd-back { margin-bottom: 1.5rem; }
+
+.legal-content h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 800;
+  color: var(--blue);
+  margin-bottom: 0.5rem;
+}
+
+.legal-content .legal-updated {
+  font-size: 13px;
+  color: var(--gray-400);
+  margin-bottom: 2.5rem;
+}
+
+.legal-content h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin: 2rem 0 0.75rem;
+}
+
+.legal-content p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--gray-600);
+  margin-bottom: 1rem;
+}
+
+.legal-content ul {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.legal-content li {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--gray-600);
+  margin-bottom: 0.4rem;
+}
+
+.legal-content a { color: var(--blue); text-decoration: underline; }
+.legal-content strong { color: var(--blue); }
 
 /* ─── SCROLL TO TOP ─── */
 #scroll-top {
@@ -1307,7 +1382,7 @@ footer {
 }
 
 .cart-empty-icon { font-size: 3.5rem; opacity: 0.6; }
-.cart-empty h3 { font-size: 16px; font-weight: 600; color: var(--gray-500); margin: 0; }
+.cart-empty h3 { font-size: 16px; font-weight: 600; color: var(--gray-400); margin: 0; }
 .cart-empty p { font-size: 13px; margin: 0; line-height: 1.5; }
 
 /* ─── CART ITEM ROW ─── */
@@ -1553,7 +1628,7 @@ footer {
 
 .confirm-desc {
   font-size: 13.5px;
-  color: var(--gray-500);
+  color: var(--gray-400);
   line-height: 1.6;
   margin: 0 0 1.5rem;
 }
